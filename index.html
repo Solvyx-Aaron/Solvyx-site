@@ -9,7 +9,7 @@
   <!-- Outfit, the brand font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet" />
 
   <style>
     /* ---------- Brand tokens (from the brand brief) ---------- */
@@ -25,6 +25,7 @@
       --white:      #FFFFFF;
 
       --font: 'Outfit', system-ui, sans-serif;
+      --font-display: 'Syne', 'Outfit', system-ui, sans-serif;
 
       /* Spacing rhythm — anchored on 8px grid */
       --pad-section: clamp(5rem, 10vw, 9rem);
@@ -56,6 +57,20 @@
       z-index: 0;
     }
 
+    /* SVG grain overlay — adds atmosphere/texture without being decorative.
+       Inline data-URI feTurbulence pattern. ~3% opacity so it reads as presence
+       not pattern. Fixed so it doesn't scroll with content. */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.035;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    }
+
     a { color: inherit; text-decoration: none; }
 
     /* ---------- Layout primitives ---------- */
@@ -64,13 +79,13 @@
       margin: 0 auto;
       padding: 0 var(--pad-content);
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
 
     /* ---------- Top nav ---------- */
     nav {
       position: relative;
-      z-index: 2;
+      z-index: 3;
       padding: 2rem 0 0;
     }
     nav .wrap {
@@ -93,13 +108,12 @@
       color: var(--gold);
     }
 
-    /* ---------- The SX lockup (built per solvyx-mark-v11.html prototype) ----------
-       The mark is NOT a single SVG. It's a CSS composition:
-       - The S is real Outfit-font text (scales perfectly, ligatures intact)
-       - The X is an SVG of two diagonal lines, absolutely positioned BEHIND
-         the first character of the wordmark with z-index: 1
-       - The X SVG is sized roughly 70% of the wordmark font size
-    */
+    /* SX lockup — built to match v11 prototype EXACTLY.
+       Prototype values (dark lockup): 38px font, 54px X, left:4px.
+       I scale the wordmark-text font-size as needed; X size and offset
+       use ems so the prototype's ratios (1.42x font, 0.1x font) hold at every scale.
+       The visual outcome: X-center aligns with S/O junction, X extends ~2x the
+       visible S character height. */
     .lockup {
       display: inline-flex;
       flex-direction: column;
@@ -115,7 +129,7 @@
     .wordmark-text {
       font-family: var(--font);
       font-weight: 600;
-      font-size: 1.5rem;
+      font-size: 38px;            /* match prototype's exact size to use prototype's exact X dims */
       letter-spacing: 0.12em;
       text-transform: uppercase;
       line-height: 1;
@@ -125,13 +139,13 @@
     .wt-s    { color: var(--gold); }
     .wt-rest { color: var(--white); }
 
-    /* X behind, scaled relative to font, slight left offset */
+    /* X: copy prototype values 1:1 */
     .x-behind {
       position: absolute;
       top: 50%;
-      left: 3px;
-      width: 1.4em;
-      height: 1.4em;
+      left: 4px;
+      width: 54px;
+      height: 54px;
       transform: translateY(-50%);
       z-index: 1;
     }
@@ -143,7 +157,7 @@
     .wordmark-sub {
       font-family: var(--font);
       font-weight: 300;
-      font-size: 0.625rem;
+      font-size: 10px;
       letter-spacing: 0.5em;
       text-transform: uppercase;
       color: var(--gold);
@@ -154,6 +168,10 @@
       padding: clamp(4rem, 12vh, 9rem) 0 var(--pad-section);
       position: relative;
     }
+    /* ---------- Hero reveal choreography ----------
+       The whole sequence runs ~1.5s on first paint, then the page goes still.
+       Per Nick's principle: ONE intentional moment over scattered micro-interactions.
+       Each element has a purposefully different motion personality. */
     .eyebrow {
       font-size: 0.8rem;
       font-weight: 500;
@@ -162,20 +180,23 @@
       text-transform: uppercase;
       margin: 0 0 1.5rem;
       opacity: 0;
-      animation: fade-up 0.7s 0.1s ease-out forwards;
+      animation: fade-in 0.6s 0.4s ease-out forwards;
     }
+
+    /* Headline reveals as a clipped wipe — feels deliberate, not generic. */
     h1 {
-      font-family: var(--font);
+      font-family: var(--font-display);
       font-weight: 600;
       font-size: clamp(2.5rem, 6vw, 4.5rem);
-      line-height: 1.05;
-      letter-spacing: -0.01em;
+      line-height: 1.02;
+      letter-spacing: -0.025em;
       margin: 0 0 1.75rem;
       max-width: 22ch;
       opacity: 0;
-      animation: fade-up 0.8s 0.25s ease-out forwards;
+      animation: rise-in 0.9s 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
     h1 .gold { color: var(--gold); font-style: normal; }
+
     .lede {
       font-size: clamp(1.05rem, 1.6vw, 1.25rem);
       color: var(--slate-300);
@@ -183,7 +204,7 @@
       margin: 0 0 2.75rem;
       line-height: 1.55;
       opacity: 0;
-      animation: fade-up 0.8s 0.4s ease-out forwards;
+      animation: fade-up 0.7s 1.0s ease-out forwards;
     }
 
     .cta-row {
@@ -192,7 +213,7 @@
       gap: 1.5rem;
       flex-wrap: wrap;
       opacity: 0;
-      animation: fade-up 0.8s 0.55s ease-out forwards;
+      animation: fade-up 0.6s 1.3s ease-out forwards;
     }
     .btn {
       display: inline-flex;
@@ -234,11 +255,11 @@
       margin: 0 0 1.5rem;
     }
     h2 {
-      font-family: var(--font);
+      font-family: var(--font-display);
       font-weight: 600;
       font-size: clamp(1.875rem, 3.5vw, 2.75rem);
-      line-height: 1.15;
-      letter-spacing: -0.01em;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
       margin: 0 0 2rem;
       max-width: 26ch;
     }
@@ -261,46 +282,75 @@
       .split { grid-template-columns: 5fr 7fr; gap: 5rem; align-items: start; }
     }
 
-    /* ---------- 'What you'll get' cards ---------- */
+    /* ---------- 'What you'll get' — editorial asymmetric layout ----------
+       Breaks the standard 3-equal-column SaaS feature grid. First promise is
+       larger and oversized (it's the most important — responsiveness — and the
+       one that distinguishes you most from absentee bookkeepers). The other
+       two are smaller and offset, framing it. */
     .promises {
       display: grid;
       grid-template-columns: 1fr;
       gap: 1rem;
-      margin-top: 2rem;
+      margin-top: 3rem;
     }
-    @media (min-width: 720px) {
-      .promises { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+    @media (min-width: 860px) {
+      .promises {
+        grid-template-columns: 1.4fr 1fr;
+        grid-template-rows: auto auto;
+        gap: 1.25rem 1.5rem;
+      }
+      .promise:nth-child(1) {
+        grid-row: span 2;
+        padding: 3rem 2.5rem;
+      }
+      .promise:nth-child(1) .promise-num {
+        font-size: 4rem;
+        margin-bottom: 2rem;
+      }
+      .promise:nth-child(1) h3 {
+        font-size: 1.875rem;
+        margin-bottom: 1.25rem;
+      }
+      .promise:nth-child(1) p {
+        font-size: 1.075rem;
+        max-width: 36ch;
+      }
+      .promise:nth-child(3) {
+        margin-top: 1.5rem;       /* offset the third card downward */
+      }
     }
     .promise {
       background: var(--slate-900);
       border: 1px solid rgba(148, 175, 200, 0.08);
       border-radius: 6px;
       padding: 2rem 1.75rem 2.25rem;
-      transition: border-color 0.3s ease, transform 0.3s ease;
+      transition: border-color 0.4s ease, transform 0.4s ease;
+      position: relative;
     }
     .promise:hover {
       border-color: rgba(201, 169, 110, 0.3);
       transform: translateY(-2px);
     }
     .promise-num {
-      font-family: var(--font);
-      font-weight: 300;
-      font-size: 2.25rem;
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: 2.5rem;
       color: var(--gold);
-      letter-spacing: 0.05em;
+      letter-spacing: -0.02em;
       line-height: 1;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
     }
     .promise h3 {
-      font-size: 1.25rem;
+      font-family: var(--font-display);
+      font-size: 1.375rem;
       font-weight: 600;
-      margin: 0 0 0.75rem;
+      margin: 0 0 0.85rem;
       color: var(--white);
-      letter-spacing: -0.005em;
+      letter-spacing: -0.015em;
     }
     .promise p {
       color: var(--slate-300);
-      font-size: 0.975rem;
+      font-size: 1rem;
       line-height: 1.6;
       margin: 0;
     }
@@ -355,6 +405,15 @@
     /* ---------- Animation ---------- */
     @keyframes fade-up {
       from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    /* rise-in: bigger movement + slight scale, used for the headline. */
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
