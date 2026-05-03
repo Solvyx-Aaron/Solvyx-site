@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solvyx Financial — Bookkeeping for trades businesses</title>
+  <meta name="description" content="Bookkeeping for trades businesses run by the owner, not by a finance team. Built by someone who actually knows the trades." />
+
+  <!-- Outfit, the brand font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ---------- Brand tokens (from the brand brief) ---------- */
+    :root {
+      --gold:       #C9A96E;
+      --gold-soft:  #C9A96Ecc;
+      --slate-950:  #0D1117;
+      --slate-900:  #141C25;
+      --slate-800:  #1B2530;
+      --slate-700:  #2D3D52;
+      --slate-300:  #94AFC8;
+      --slate-50:   #F4F7FA;
+      --white:      #FFFFFF;
+
+      --font: 'Outfit', system-ui, sans-serif;
+
+      /* Spacing rhythm — anchored on 8px grid */
+      --pad-section: clamp(5rem, 10vw, 9rem);
+      --pad-content: clamp(1.5rem, 5vw, 4rem);
+      --max-w: 72rem;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--slate-950);
+      color: var(--white);
+      font-family: var(--font);
+      font-weight: 400;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Subtle gold radial glow behind the hero — atmosphere not decoration */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(900px 600px at 75% -10%, rgba(201, 169, 110, 0.10), transparent 60%),
+        radial-gradient(700px 500px at -10% 30%, rgba(148, 175, 200, 0.05), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ---------- Layout primitives ---------- */
+    .wrap {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 var(--pad-content);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ---------- Top nav ---------- */
+    nav {
+      position: relative;
+      z-index: 2;
+      padding: 2rem 0 0;
+    }
+    nav .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-cta {
+      font-size: 0.875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--slate-300);
+      padding: 0.65rem 1.25rem;
+      border: 1px solid rgba(148, 175, 200, 0.25);
+      border-radius: 999px;
+      transition: all 0.25s ease;
+    }
+    .nav-cta:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ---------- The SX lockup (built per solvyx-mark-v11.html prototype) ----------
+       The mark is NOT a single SVG. It's a CSS composition:
+       - The S is real Outfit-font text (scales perfectly, ligatures intact)
+       - The X is an SVG of two diagonal lines, absolutely positioned BEHIND
+         the first character of the wordmark with z-index: 1
+       - The X SVG is sized roughly 70% of the wordmark font size
+    */
+    .lockup {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: flex-start;
+      line-height: 1;
+    }
+    .wordmark-line {
+      position: relative;
+      display: inline-block;
+      line-height: 1;
+    }
+    .wordmark-text {
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 1.5rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: 1;
+      position: relative;
+      z-index: 2;
+    }
+    .wt-s    { color: var(--gold); }
+    .wt-rest { color: var(--white); }
+
+    /* X behind, scaled relative to font, slight left offset */
+    .x-behind {
+      position: absolute;
+      top: 50%;
+      left: 3px;
+      width: 1.4em;
+      height: 1.4em;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+    .wordmark-rule {
+      height: 1px;
+      width: 100%;
+      background: linear-gradient(90deg, var(--gold) 0%, transparent 75%);
+    }
+    .wordmark-sub {
+      font-family: var(--font);
+      font-weight: 300;
+      font-size: 0.625rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      padding: clamp(4rem, 12vh, 9rem) 0 var(--pad-section);
+      position: relative;
+    }
+    .eyebrow {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--gold);
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      margin: 0 0 1.5rem;
+      opacity: 0;
+      animation: fade-up 0.7s 0.1s ease-out forwards;
+    }
+    h1 {
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      margin: 0 0 1.75rem;
+      max-width: 22ch;
+      opacity: 0;
+      animation: fade-up 0.8s 0.25s ease-out forwards;
+    }
+    h1 .gold { color: var(--gold); font-style: normal; }
+    .lede {
+      font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+      color: var(--slate-300);
+      max-width: 52ch;
+      margin: 0 0 2.75rem;
+      line-height: 1.55;
+      opacity: 0;
+      animation: fade-up 0.8s 0.4s ease-out forwards;
+    }
+
+    .cta-row {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fade-up 0.8s 0.55s ease-out forwards;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 1rem 1.75rem;
+      background: var(--gold);
+      color: var(--slate-950);
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      border-radius: 4px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 32px -12px rgba(201, 169, 110, 0.5);
+      background: #d4b87f;
+    }
+    .btn .arrow {
+      transition: transform 0.2s ease;
+    }
+    .btn:hover .arrow { transform: translateX(3px); }
+
+    .btn-meta {
+      font-size: 0.875rem;
+      color: var(--slate-300);
+      letter-spacing: 0.05em;
+    }
+
+    /* ---------- Section structure ---------- */
+    section { padding: var(--pad-section) 0; position: relative; }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--gold);
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      margin: 0 0 1.5rem;
+    }
+    h2 {
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      margin: 0 0 2rem;
+      max-width: 26ch;
+    }
+    h2 .gold { color: var(--gold); font-style: normal; }
+    .body-text {
+      color: var(--slate-300);
+      font-size: 1.075rem;
+      max-width: 60ch;
+      line-height: 1.65;
+    }
+    .body-text + .body-text { margin-top: 1.25rem; }
+
+    /* ---------- 'Why trades' section: split layout ---------- */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+    @media (min-width: 860px) {
+      .split { grid-template-columns: 5fr 7fr; gap: 5rem; align-items: start; }
+    }
+
+    /* ---------- 'What you'll get' cards ---------- */
+    .promises {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    @media (min-width: 720px) {
+      .promises { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+    }
+    .promise {
+      background: var(--slate-900);
+      border: 1px solid rgba(148, 175, 200, 0.08);
+      border-radius: 6px;
+      padding: 2rem 1.75rem 2.25rem;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+    .promise:hover {
+      border-color: rgba(201, 169, 110, 0.3);
+      transform: translateY(-2px);
+    }
+    .promise-num {
+      font-family: var(--font);
+      font-weight: 300;
+      font-size: 2.25rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      line-height: 1;
+      margin-bottom: 1.25rem;
+    }
+    .promise h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 0.75rem;
+      color: var(--white);
+      letter-spacing: -0.005em;
+    }
+    .promise p {
+      color: var(--slate-300);
+      font-size: 0.975rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ---------- Divider ---------- */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201, 169, 110, 0.3), transparent);
+      max-width: var(--max-w);
+      margin: 0 auto;
+    }
+
+    /* ---------- About ---------- */
+    .about {
+      background: var(--slate-900);
+      position: relative;
+    }
+    .about::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201, 169, 110, 0.2), transparent);
+    }
+
+    /* ---------- Final CTA section ---------- */
+    .final-cta {
+      text-align: left;
+      padding: var(--pad-section) 0;
+    }
+    .final-cta h2 {
+      max-width: 22ch;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ---------- Footer ---------- */
+    footer {
+      border-top: 1px solid rgba(148, 175, 200, 0.08);
+      padding: 2.5rem 0;
+      color: var(--slate-300);
+      font-size: 0.875rem;
+    }
+    footer .wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    footer a:hover { color: var(--gold); }
+
+    /* ---------- Animation ---------- */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+
+
+  <!-- ===== Nav ===== -->
+  <nav>
+    <div class="wrap">
+      <a class="lockup" href="#" aria-label="Solvyx Financial">
+        <span class="wordmark-line">
+          <svg class="x-behind" viewBox="0 0 90 90" aria-hidden="true">
+            <line x1="22" y1="8" x2="68" y2="82" stroke="#94afc8" stroke-width="8" stroke-linecap="round" opacity="0.40"/>
+            <line x1="68" y1="8" x2="22" y2="82" stroke="#94afc8" stroke-width="8" stroke-linecap="round" opacity="0.40"/>
+          </svg>
+          <span class="wordmark-text">
+            <span class="wt-s">S</span><span class="wt-rest">olvyx</span>
+          </span>
+        </span>
+        <span class="wordmark-rule"></span>
+        <span class="wordmark-sub">Financial</span>
+      </a>
+      <a class="nav-cta" href="https://cal.com/solvyx/discovery">Book a call</a>
+    </div>
+  </nav>
+
+  <!-- ===== Hero ===== -->
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Bookkeeping &nbsp;·&nbsp; Built for the Trades</p>
+      <h1>Books that <em class="gold">work the way</em> your business does.</h1>
+      <p class="lede">
+        Bookkeeping for trades businesses &mdash; the kind run by the owner, not by
+        a finance team. Built by someone who actually understands the work: the
+        cash jobs, the messy receipts, the in-between weeks &mdash; and turns it
+        into clean numbers you can act on.
+      </p>
+      <div class="cta-row">
+        <a class="btn" href="https://cal.com/solvyx/discovery">
+          Book a discovery call
+          <span class="arrow" aria-hidden="true">&rarr;</span>
+        </a>
+        <span class="btn-meta">30 minutes &nbsp;·&nbsp; No pitch, just a conversation</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <!-- ===== Why trades ===== -->
+  <section>
+    <div class="wrap split">
+      <div>
+        <p class="section-label">The Gap</p>
+        <h2>Most bookkeepers find your work <em class="gold">messy.</em> I don't.</h2>
+      </div>
+      <div>
+        <p class="body-text">
+          Trades businesses don't run on spreadsheets and tidy invoice cycles.
+          They run on jobs that change scope mid-week, materials reimbursed three
+          ways, equipment that depreciates differently than office assets, and
+          customers who pay when they pay.
+        </p>
+        <p class="body-text">
+          A generalist bookkeeper looks at that and tries to force it into a
+          standard chart of accounts. The result is books that technically
+          balance but don't tell you anything useful about your business.
+        </p>
+        <p class="body-text">
+          I come from the trades side. I know what a real job looks like, what
+          the numbers ought to mean, and how to set up books that reflect the
+          way you actually work &mdash; not the way an accountant wishes you worked.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== What you'll get ===== -->
+  <section>
+    <div class="wrap">
+      <p class="section-label">What You Get</p>
+      <h2>Three things every trades business owner deserves <em class="gold">from their bookkeeper.</em></h2>
+
+      <div class="promises">
+        <div class="promise">
+          <div class="promise-num">01</div>
+          <h3>Responsiveness</h3>
+          <p>You won't wait two weeks for a reply. When something needs answering, it gets answered &mdash; in plain English, not accountant-speak.</p>
+        </div>
+
+        <div class="promise">
+          <div class="promise-num">02</div>
+          <h3>Clarity</h3>
+          <p>You'll always know where you stand financially. Clean books, on time, every month &mdash; so you can make decisions on facts instead of gut feel.</p>
+        </div>
+
+        <div class="promise">
+          <div class="promise-num">03</div>
+          <h3>Room to grow</h3>
+          <p>Solvyx scales with your business. Start with monthly bookkeeping; layer on payroll, AR cleanup, or job costing as the business grows.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== About ===== -->
+  <section class="about">
+    <div class="wrap split">
+      <div>
+        <p class="section-label">About</p>
+        <h2>Numbers and trades, <em class="gold">in the same person.</em></h2>
+      </div>
+      <div>
+        <p class="body-text">
+          I'm Aaron Olinger, the person behind Solvyx Financial. I built Solvyx
+          because trades businesses deserve a bookkeeper who actually knows what
+          the work looks like &mdash; and most of them don't have one.
+        </p>
+        <p class="body-text">
+          I come to bookkeeping with a foot in both worlds. I spend my time
+          turning real-world operations into structured numbers, and I've seen
+          firsthand how often the trades get fit into accounting frameworks
+          that weren't built for them. The work isn't always clean and it's
+          rarely black-and-white &mdash; that's normal to me, not an obstacle.
+        </p>
+        <p class="body-text">
+          Solvyx Financial is built on stability, precision, and the belief
+          that small businesses are worth doing well by. If that sounds like
+          the kind of bookkeeper you've been looking for, let's talk.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== Final CTA ===== -->
+  <section class="final-cta">
+    <div class="wrap">
+      <p class="section-label">Next Step</p>
+      <h2>A 30-minute call. <em class="gold">No pitch.</em></h2>
+      <p class="body-text" style="margin-bottom: 2.5rem;">
+        Tell me about your business and where the books stand today. If Solvyx is
+        a fit, we'll talk about what working together looks like. If not, you'll
+        leave the call with at least one useful idea.
+      </p>
+      <div class="cta-row">
+        <a class="btn" href="https://cal.com/solvyx/discovery">
+          Book a discovery call
+          <span class="arrow" aria-hidden="true">&rarr;</span>
+        </a>
+        <span class="btn-meta">cal.com/solvyx/discovery</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <div class="wrap">
+      <span>&copy; 2026 Solvyx Financial LLC</span>
+      <a href="mailto:aaron@solvyxfinancial.com">aaron@solvyxfinancial.com</a>
+    </div>
+  </footer>
+
+</body>
+</html>
