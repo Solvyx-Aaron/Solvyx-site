@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solvyx Financial — Bookkeeping for trades businesses</title>
-  <meta name="description" content="Bookkeeping for trades businesses run by the owner, not by a finance team. Built by someone who actually knows the trades." />
+  <title>Contact — Solvyx Financial</title>
+  <meta name="description" content="Get in touch with Solvyx Financial. Book a free 30-minute discovery call, or send a message and I'll get back to you." />
 
   <!-- Outfit, the brand font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -92,6 +92,20 @@
       align-items: center;
       justify-content: space-between;
     }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .nav-link {
+      font-size: 0.875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--slate-300);
+      transition: color 0.25s ease;
+    }
+    .nav-link:hover { color: var(--gold); }
+    .nav-link.is-active { color: var(--gold); }
     .nav-cta {
       font-size: 0.875rem;
       letter-spacing: 0.08em;
@@ -106,19 +120,6 @@
       border-color: var(--gold);
       color: var(--gold);
     }
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-    .nav-link {
-      font-size: 0.875rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--slate-300);
-      transition: color 0.25s ease;
-    }
-    .nav-link:hover { color: var(--gold); }
 
     /* SX lockup — built to match v11 prototype EXACTLY.
        Prototype values (dark lockup): 38px font, 54px X, left:4px.
@@ -224,8 +225,6 @@
       align-items: center;
       gap: 1.5rem;
       flex-wrap: wrap;
-      opacity: 0;
-      animation: fade-up 0.6s 1.3s ease-out forwards;
     }
     .btn {
       display: inline-flex;
@@ -284,89 +283,6 @@
     }
     .body-text + .body-text { margin-top: 1.25rem; }
 
-    /* ---------- 'Why trades' section: split layout ---------- */
-    .split {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 3rem;
-    }
-    @media (min-width: 860px) {
-      .split { grid-template-columns: 5fr 7fr; gap: 5rem; align-items: start; }
-    }
-
-    /* ---------- 'What you'll get' — editorial asymmetric layout ----------
-       Breaks the standard 3-equal-column SaaS feature grid. First promise is
-       larger and oversized (it's the most important — responsiveness — and the
-       one that distinguishes you most from absentee bookkeepers). The other
-       two are smaller and offset, framing it. */
-    .promises {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
-      margin-top: 3rem;
-    }
-    @media (min-width: 860px) {
-      .promises {
-        grid-template-columns: 1.4fr 1fr;
-        grid-template-rows: auto auto;
-        gap: 1.25rem 1.5rem;
-      }
-      .promise:nth-child(1) {
-        grid-row: span 2;
-        padding: 3rem 2.5rem;
-      }
-      .promise:nth-child(1) .promise-num {
-        font-size: 4rem;
-        margin-bottom: 2rem;
-      }
-      .promise:nth-child(1) h3 {
-        font-size: 1.875rem;
-        margin-bottom: 1.25rem;
-      }
-      .promise:nth-child(1) p {
-        font-size: 1.075rem;
-        max-width: 36ch;
-      }
-      .promise:nth-child(3) {
-        margin-top: 1.5rem;       /* offset the third card downward */
-      }
-    }
-    .promise {
-      background: var(--slate-900);
-      border: 1px solid rgba(148, 175, 200, 0.08);
-      border-radius: 6px;
-      padding: 2rem 1.75rem 2.25rem;
-      transition: border-color 0.4s ease, transform 0.4s ease;
-      position: relative;
-    }
-    .promise:hover {
-      border-color: rgba(201, 169, 110, 0.3);
-      transform: translateY(-2px);
-    }
-    .promise-num {
-      font-family: var(--font-display);
-      font-weight: 500;
-      font-size: 2.5rem;
-      color: var(--gold);
-      letter-spacing: -0.02em;
-      line-height: 1;
-      margin-bottom: 1.5rem;
-    }
-    .promise h3 {
-      font-family: var(--font-display);
-      font-size: 1.375rem;
-      font-weight: 600;
-      margin: 0 0 0.85rem;
-      color: var(--white);
-      letter-spacing: -0.015em;
-    }
-    .promise p {
-      color: var(--slate-300);
-      font-size: 1rem;
-      line-height: 1.6;
-      margin: 0;
-    }
-
     /* ---------- Divider ---------- */
     .divider {
       height: 1px;
@@ -375,27 +291,101 @@
       margin: 0 auto;
     }
 
-    /* ---------- About ---------- */
-    .about {
-      background: var(--slate-900);
-      position: relative;
+    /* ---------- Contact: call CTA + form blocks ---------- */
+    .contact-block { max-width: 60ch; }
+    .contact-block h2 { margin-bottom: 1.5rem; }
+    .contact-block .body-text { margin-bottom: 2.5rem; }
+
+    .contact-form {
+      margin-top: 2.5rem;
+      max-width: 42rem;
     }
-    .about::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(to right, transparent, rgba(201, 169, 110, 0.2), transparent);
+    .field { margin-bottom: 1.5rem; }
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--slate-300);
+      margin-bottom: 0.6rem;
+    }
+    .field label .req { color: var(--gold); }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      background: var(--slate-900);
+      border: 1px solid rgba(148, 175, 200, 0.18);
+      border-radius: 4px;
+      padding: 0.85rem 1rem;
+      color: var(--white);
+      font-family: var(--font);
+      font-size: 1rem;
+      line-height: 1.5;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .field input::placeholder,
+    .field textarea::placeholder { color: rgba(148, 175, 200, 0.5); }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.12);
+    }
+    .field textarea { resize: vertical; min-height: 8rem; }
+
+    /* Select: strip native chrome, paint a gold chevron to match brand */
+    .field select {
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      padding-right: 2.75rem;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='none' stroke='%23C9A96E' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5 L6 6.5 L11 1.5'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+    }
+    /* While the disabled placeholder option is selected, the field is :invalid —
+       mute the text so it reads like a placeholder, then go white on a real pick. */
+    .field select:invalid { color: rgba(148, 175, 200, 0.5); }
+    .field select option { color: var(--white); background: var(--slate-900); }
+
+    /* Submit is a <button> reusing .btn — normalize element defaults */
+    button.btn { border: none; cursor: pointer; font-family: var(--font); }
+    button.btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
     }
 
-    /* ---------- Final CTA section ---------- */
-    .final-cta {
-      text-align: left;
-      padding: var(--pad-section) 0;
+    /* Honeypot — kept out of the layout and out of the tab order */
+    .hp-field {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
     }
-    .final-cta h2 {
-      max-width: 22ch;
-      margin-bottom: 2.5rem;
+
+    .form-result {
+      margin-top: 2rem;
+      padding: 1.1rem 1.25rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      line-height: 1.55;
+      display: none;
+    }
+    .form-result.success {
+      background: rgba(201, 169, 110, 0.10);
+      border: 1px solid rgba(201, 169, 110, 0.35);
+      color: var(--white);
+    }
+    .form-result.error {
+      background: rgba(201, 100, 100, 0.10);
+      border: 1px solid rgba(201, 100, 100, 0.40);
+      color: var(--white);
     }
 
     /* ---------- Footer ---------- */
@@ -441,12 +431,10 @@
 </head>
 <body>
 
-
-
   <!-- ===== Nav ===== -->
   <nav>
     <div class="wrap">
-      <a class="lockup" href="#" aria-label="Solvyx Financial">
+      <a class="lockup" href="/" aria-label="Solvyx Financial — home">
         <span class="wordmark-line">
           <svg class="x-behind" viewBox="0 0 58 66" aria-hidden="true">
             <line x1="22" y1="11" x2="50" y2="55" stroke="#94AFC8" stroke-width="4.8" stroke-linecap="round" opacity="0.40"/>
@@ -460,7 +448,7 @@
         <span class="wordmark-sub">Financial</span>
       </a>
       <div class="nav-actions">
-        <a class="nav-link" href="/contact">Contact</a>
+        <a class="nav-link is-active" href="/contact" aria-current="page">Contact</a>
         <a class="nav-cta" href="https://cal.com/solvyx/discovery">Book a call</a>
       </div>
     </div>
@@ -469,13 +457,26 @@
   <!-- ===== Hero ===== -->
   <header class="hero">
     <div class="wrap">
-      <p class="eyebrow">Bookkeeping &nbsp;·&nbsp; Built for the Trades</p>
-      <h1>Books that <em class="gold">work the way</em> your business does.</h1>
+      <p class="eyebrow">Contact</p>
+      <h1>Let's <em class="gold">talk.</em></h1>
       <p class="lede">
-        Bookkeeping for trades businesses &mdash; the kind run by the owner, not by
-        a finance team. Built by someone who actually understands the work: the
-        cash jobs, the messy receipts, the in-between weeks &mdash; and turns it
-        into clean numbers you can act on.
+        Two easy ways to reach me &mdash; book a free 30-minute discovery call, or
+        send a message and I'll get back to you. No pressure, no pitch.
+      </p>
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <!-- ===== CTA 1: Book a call (above the form) ===== -->
+  <section>
+    <div class="wrap contact-block">
+      <p class="section-label">Book a Call</p>
+      <h2>Ready to talk? <em class="gold">Book a free discovery call.</em></h2>
+      <p class="body-text">
+        30 minutes, no pitch &mdash; just a conversation about your business and
+        where your books stand today. If Solvyx is a fit, we'll talk about what
+        working together looks like.
       </p>
       <div class="cta-row">
         <a class="btn" href="https://cal.com/solvyx/discovery">
@@ -485,116 +486,80 @@
         <span class="btn-meta">30 minutes &nbsp;·&nbsp; No pitch, just a conversation</span>
       </div>
     </div>
-  </header>
+  </section>
 
   <div class="divider"></div>
 
-  <!-- ===== Why trades ===== -->
+  <!-- ===== CTA 2: Send a message (the form) ===== -->
   <section>
-    <div class="wrap split">
-      <div>
-        <p class="section-label">The Gap</p>
-        <h2>Most bookkeepers find your work <em class="gold">messy.</em> I don't.</h2>
-      </div>
-      <div>
-        <p class="body-text">
-          Trades businesses don't run on spreadsheets and tidy invoice cycles.
-          They run on jobs that change scope mid-week, materials reimbursed three
-          ways, equipment that depreciates differently than office assets, and
-          customers who pay when they pay.
-        </p>
-        <p class="body-text">
-          A generalist bookkeeper looks at that and tries to force it into a
-          standard chart of accounts. The result is books that technically
-          balance but don't tell you anything useful about your business.
-        </p>
-        <p class="body-text">
-          I come from the trades side. I know what a real job looks like, what
-          the numbers ought to mean, and how to set up books that reflect the
-          way you actually work &mdash; not the way an accountant wishes you worked.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
-  <!-- ===== What you'll get ===== -->
-  <section>
-    <div class="wrap">
-      <p class="section-label">What You Get</p>
-      <h2>Three things every trades business owner deserves <em class="gold">from their bookkeeper.</em></h2>
-
-      <div class="promises">
-        <div class="promise">
-          <div class="promise-num">01</div>
-          <h3>Responsiveness</h3>
-          <p>You won't wait two weeks for a reply. When something needs answering, it gets answered &mdash; in plain English, not accountant-speak.</p>
-        </div>
-
-        <div class="promise">
-          <div class="promise-num">02</div>
-          <h3>Clarity</h3>
-          <p>You'll always know where you stand financially. Clean books, on time, every month &mdash; so you can make decisions on facts instead of gut feel.</p>
-        </div>
-
-        <div class="promise">
-          <div class="promise-num">03</div>
-          <h3>Room to grow</h3>
-          <p>Solvyx scales with your business. Start with monthly bookkeeping; layer on payroll, AR cleanup, or job costing as the business grows.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== About ===== -->
-  <section class="about">
-    <div class="wrap split">
-      <div>
-        <p class="section-label">About</p>
-        <h2>Numbers and trades, <em class="gold">in the same person.</em></h2>
-      </div>
-      <div>
-        <p class="body-text">
-          I'm Aaron Olinger, the person behind Solvyx Financial. I built Solvyx
-          because trades businesses deserve a bookkeeper who actually knows what
-          the work looks like &mdash; and most of them don't have one.
-        </p>
-        <p class="body-text">
-          I come to bookkeeping with a foot in both worlds. I spend my time
-          turning real-world operations into structured numbers, and I've seen
-          firsthand how often the trades get fit into accounting frameworks
-          that weren't built for them. The work isn't always clean and it's
-          rarely black-and-white &mdash; that's normal to me, not an obstacle.
-        </p>
-        <p class="body-text">
-          Solvyx Financial is built on stability, precision, and the belief
-          that small businesses are worth doing well by. If that sounds like
-          the kind of bookkeeper you've been looking for, let's talk.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
-  <!-- ===== Final CTA ===== -->
-  <section class="final-cta">
-    <div class="wrap">
-      <p class="section-label">Next Step</p>
-      <h2>A 30-minute call. <em class="gold">No pitch.</em></h2>
-      <p class="body-text" style="margin-bottom: 2.5rem;">
-        Tell me about your business and where the books stand today. If Solvyx is
-        a fit, we'll talk about what working together looks like. If not, you'll
-        leave the call with at least one useful idea.
+    <div class="wrap contact-block">
+      <p class="section-label">Send a Message</p>
+      <h2>Have a question first? <em class="gold">Send a message.</em></h2>
+      <p class="body-text">
+        Tell me a bit about your business and what you're after. I usually reply
+        within one business day.
       </p>
-      <div class="cta-row">
-        <a class="btn" href="https://cal.com/solvyx/discovery">
-          Book a discovery call
-          <span class="arrow" aria-hidden="true">&rarr;</span>
-        </a>
-        <span class="btn-meta">cal.com/solvyx/discovery</span>
-      </div>
+
+      <form id="contact-form" class="contact-form" novalidate>
+        <!-- Web3Forms access key. Messages are delivered to the email
+             registered to this key at web3forms.com. -->
+        <input type="hidden" name="access_key" value="ea61a6bc-57ac-4202-a2a4-99fd37cbcf8a" />
+        <input type="hidden" name="subject" value="New message from the Solvyx Financial website" />
+        <input type="hidden" name="from_name" value="Solvyx Financial Website" />
+
+        <!-- Honeypot: real users never fill this; bots usually do -->
+        <div class="hp-field" aria-hidden="true">
+          <label>Do not fill this out if you're human
+            <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" />
+          </label>
+        </div>
+
+        <div class="field">
+          <label for="name">Name <span class="req">*</span></label>
+          <input type="text" id="name" name="name" placeholder="Your name" required autocomplete="name" />
+        </div>
+
+        <div class="field">
+          <label for="business_type">Business Type <span class="req">*</span></label>
+          <select id="business_type" name="business_type" required>
+            <option value="" disabled selected>Select your trade&hellip;</option>
+            <option>Plumbing</option>
+            <option>HVAC</option>
+            <option>Electrical</option>
+            <option>Landscaping / Lawn Care</option>
+            <option>General Contracting</option>
+            <option>Roofing</option>
+            <option>Painting</option>
+            <option>Concrete / Masonry</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="field" id="other-field" hidden>
+          <label for="business_type_other">Tell me what you do <span class="req">*</span></label>
+          <input type="text" id="business_type_other" name="business_type_other" placeholder="Your trade or business type" />
+        </div>
+
+        <div class="field">
+          <label for="email">Email <span class="req">*</span></label>
+          <input type="email" id="email" name="email" placeholder="you@yourbusiness.com" required autocomplete="email" />
+        </div>
+
+        <div class="field">
+          <label for="message">Message <span class="req">*</span></label>
+          <textarea id="message" name="message" placeholder="What's on your mind?" required></textarea>
+        </div>
+
+        <div class="cta-row">
+          <button type="submit" class="btn">
+            Send message
+            <span class="arrow" aria-hidden="true">&rarr;</span>
+          </button>
+          <span class="btn-meta">I'll reply within one business day</span>
+        </div>
+
+        <div id="form-result" class="form-result" role="status" aria-live="polite"></div>
+      </form>
     </div>
   </section>
 
@@ -605,6 +570,80 @@
       <a href="mailto:aaron@solvyxfinancial.com">aaron@solvyxfinancial.com</a>
     </div>
   </footer>
+
+  <script>
+    (function () {
+      var form = document.getElementById('contact-form');
+      var result = document.getElementById('form-result');
+      var submitBtn = form.querySelector('button[type="submit"]');
+      var submitLabel = submitBtn.innerHTML;
+
+      function showResult(type, message) {
+        result.className = 'form-result ' + type;
+        result.textContent = message;
+        result.style.display = 'block';
+      }
+
+      // "Other" reveals a free-text field; only require it while it's visible.
+      var businessType = document.getElementById('business_type');
+      var otherField = document.getElementById('other-field');
+      var otherInput = document.getElementById('business_type_other');
+      businessType.addEventListener('change', function () {
+        var isOther = businessType.value === 'Other';
+        otherField.hidden = !isOther;
+        otherInput.required = isOther;
+        if (!isOther) otherInput.value = '';
+      });
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        // Native validity check (we used novalidate to control the UX)
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        var payload = Object.fromEntries(new FormData(form).entries());
+
+        // Collapse the "Other" specification into business_type for a clean email.
+        if (payload.business_type === 'Other' && payload.business_type_other) {
+          payload.business_type = payload.business_type_other;
+        }
+        delete payload.business_type_other;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Sending&hellip;';
+        result.style.display = 'none';
+
+        try {
+          var response = await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+          var data = await response.json();
+
+          if (response.ok && data.success) {
+            form.reset();
+            form.style.display = 'none';
+            showResult('success', "Thanks — your message is on its way. I'll get back to you within one business day.");
+          } else {
+            showResult('error', (data && data.message) ? data.message : 'Something went wrong. Please try again, or email aaron@solvyxfinancial.com directly.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = submitLabel;
+          }
+        } catch (err) {
+          showResult('error', 'Something went wrong sending your message. Please try again, or email aaron@solvyxfinancial.com directly.');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = submitLabel;
+        }
+      });
+    })();
+  </script>
 
 </body>
 </html>
