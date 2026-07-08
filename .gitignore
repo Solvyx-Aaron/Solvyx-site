@@ -1,0 +1,4 @@
+# Dev/critique tooling — never deploy these with the site
+shot.js
+critique/
+node_modules/

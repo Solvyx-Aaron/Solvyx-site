@@ -4,12 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact — Solvyx Financial</title>
-  <meta name="description" content="Get in touch with Solvyx Financial. Book a free 30-minute discovery call, or send a message and I'll get back to you." />
+  <meta name="description" content="Get in touch with Solvyx Financial. Book a 30-minute discovery call, or send a message and I'll get back to you within one business day." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
   <!-- Outfit, the brand font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Gate scroll-reveal hiding on JS being available, so content is never
+       invisible for no-JS visitors or crawlers. -->
+  <script>document.documentElement.className += ' js';</script>
 
   <style>
     /* ---------- Brand tokens (from the brand brief) ---------- */
@@ -70,6 +75,20 @@
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='51.96'><path fill='none' stroke='%2394AFC8' stroke-width='0.6' d='M 30,0 L 15,25.98 L -15,25.98 L -30,0 L -15,-25.98 L 15,-25.98 Z M 75,25.98 L 60,51.96 L 30,51.96 L 15,25.98 L 30,0 L 60,0 Z'/></svg>");
     }
 
+    /* Film grain — feTurbulence noise blended over everything at low opacity.
+       Kills the dead-flat digital slab look without changing the palette. */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.05;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>");
+    }
+
+    ::selection { background: rgba(201, 169, 110, 0.35); color: var(--white); }
+
     a { color: inherit; text-decoration: none; }
 
     /* ---------- Layout primitives ---------- */
@@ -110,6 +129,7 @@
       font-size: 0.875rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      white-space: nowrap;
       color: var(--slate-300);
       padding: 0.65rem 1.25rem;
       border: 1px solid rgba(148, 175, 200, 0.25);
@@ -119,6 +139,27 @@
     .nav-cta:hover {
       border-color: var(--gold);
       color: var(--gold);
+    }
+
+    /* Keyboard focus — gold ring, matches hover language. Form fields keep
+       their own border/box-shadow focus treatment below. */
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* Narrow screens: the full lockup + both nav actions don't fit on one line
+       at 390px. Shrink the lockup, tighten the actions, and let the actions row
+       wrap below the lockup instead of colliding with it. */
+    @media (max-width: 600px) {
+      nav .wrap { flex-wrap: wrap; row-gap: 1.25rem; }
+      .wordmark-text { font-size: 30px; }
+      .x-behind { left: -6px; width: 46px; height: 52px; }
+      .nav-actions { gap: 1rem; }
+      .nav-link { font-size: 0.8rem; }
+      .nav-cta { font-size: 0.8rem; padding: 0.55rem 1rem; }
     }
 
     /* SX lockup — built to match v11 prototype EXACTLY.
@@ -178,7 +219,9 @@
 
     /* ---------- Hero ---------- */
     .hero {
-      padding: clamp(4rem, 12vh, 9rem) 0 var(--pad-section);
+      /* Bottom padding is deliberately lighter than a full section pad — the
+         following section brings its own; stacking both left a dead zone. */
+      padding: clamp(4rem, 12vh, 8rem) 0 clamp(3.5rem, 7vw, 6rem);
       position: relative;
     }
     /* ---------- Hero reveal choreography ----------
@@ -194,6 +237,11 @@
       margin: 0 0 1.5rem;
       opacity: 0;
       animation: fade-in 0.6s 0.4s ease-out forwards;
+    }
+    /* At phone widths the 0.32em tracking pushes the eyebrow onto an awkward
+       second line — tighten it so it stays on one. */
+    @media (max-width: 480px) {
+      .eyebrow { font-size: 0.7rem; letter-spacing: 0.22em; }
     }
 
     /* Headline reveals as a clipped wipe — feels deliberate, not generic. */
@@ -258,12 +306,24 @@
     /* ---------- Section structure ---------- */
     section { padding: var(--pad-section) 0; position: relative; }
     .section-label {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
       font-size: 0.75rem;
       font-weight: 500;
       color: var(--gold);
       letter-spacing: 0.4em;
       text-transform: uppercase;
       margin: 0 0 1.5rem;
+    }
+    /* Short gold hairline anchors the label to the grid edge */
+    .section-label::before {
+      content: '';
+      width: 1.75rem;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.6;
+      flex: none;
     }
     h2 {
       font-family: var(--font-display);
@@ -291,7 +351,10 @@
       margin: 0 auto;
     }
 
-    /* ---------- Contact: call CTA + form blocks ---------- */
+    /* ---------- Contact: call CTA + form blocks ----------
+       .contact-block is an INNER div inside .wrap — never combine it with
+       .wrap on the same element. Doing so re-centered the whole section at
+       60ch and broke left-edge alignment with the nav/hero/footer grid. */
     .contact-block { max-width: 60ch; }
     .contact-block h2 { margin-bottom: 1.5rem; }
     .contact-block .body-text { margin-bottom: 2.5rem; }
@@ -391,18 +454,74 @@
     /* ---------- Footer ---------- */
     footer {
       border-top: 1px solid rgba(148, 175, 200, 0.08);
-      padding: 2.5rem 0;
+      padding: 3.5rem 0 2.5rem;
       color: var(--slate-300);
       font-size: 0.875rem;
     }
-    footer .wrap {
+    .footer-grid {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 2rem;
     }
-    footer a:hover { color: var(--gold); }
+    .footer-name {
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin: 0 0 0.45rem;
+    }
+    /* Footer wordmark carries the same X-behind mark as the nav lockup,
+       scaled to this font size (nav ratios: X is ~1.53em wide, ~1.74em tall,
+       offset ~-0.21em at the S/O junction). */
+    .footer-word { position: relative; display: inline-block; line-height: 1; }
+    .footer-x {
+      position: absolute;
+      top: 50%;
+      left: -3px;
+      width: 24px;
+      height: 28px;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+    .footer-text { position: relative; z-index: 2; }
+    .fn-s { color: var(--gold); }
+    .footer-tag { margin: 0; font-size: 0.875rem; }
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.75rem;
+    }
+    .footer-links a { transition: color 0.25s ease; }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-legal {
+      margin: 2.5rem 0 0;
+      font-size: 0.8rem;
+      color: rgba(148, 175, 200, 0.55);
+    }
+
+    /* ---------- Scroll reveals ----------
+       Same motion personality as the hero: one easing curve, small rise,
+       short stagger within a group via --reveal-delay. Hidden state only
+       applies when JS is present (html.js), and reduced-motion users see
+       everything immediately. */
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition:
+        opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
+        transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition-delay: var(--reveal-delay, 0s);
+    }
+    .js .reveal.is-in {
+      opacity: 1;
+      transform: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .js .reveal { opacity: 1; transform: none; }
+    }
 
     /* ---------- Animation ---------- */
     @keyframes fade-up {
@@ -431,6 +550,8 @@
 </head>
 <body>
 
+  <div class="grain" aria-hidden="true"></div>
+
   <!-- ===== Nav ===== -->
   <nav>
     <div class="wrap">
@@ -458,10 +579,13 @@
   <header class="hero">
     <div class="wrap">
       <p class="eyebrow">Contact</p>
+      <!-- The h1 keeps its gold phrase deliberately — one of only two on the
+           site (the other is the index h1). Don't add gold spans to h2s;
+           the every-heading-has-a-gold-phrase pattern was removed on purpose. -->
       <h1>Let's <em class="gold">talk.</em></h1>
       <p class="lede">
-        Two easy ways to reach me &mdash; book a free 30-minute discovery call, or
-        send a message and I'll get back to you. No pressure, no pitch.
+        Two easy ways to reach me: book a 30-minute discovery call, or send a
+        message and I'll get back to you within one business day.
       </p>
     </div>
   </header>
@@ -470,20 +594,22 @@
 
   <!-- ===== CTA 1: Book a call (above the form) ===== -->
   <section>
-    <div class="wrap contact-block">
-      <p class="section-label">Book a Call</p>
-      <h2>Ready to talk? <em class="gold">Book a free discovery call.</em></h2>
-      <p class="body-text">
-        30 minutes, no pitch &mdash; just a conversation about your business and
-        where your books stand today. If Solvyx is a fit, we'll talk about what
-        working together looks like.
-      </p>
-      <div class="cta-row">
-        <a class="btn" href="https://cal.com/solvyx/discovery">
-          Book a discovery call
-          <span class="arrow" aria-hidden="true">&rarr;</span>
-        </a>
-        <span class="btn-meta">30 minutes &nbsp;·&nbsp; No pitch, just a conversation</span>
+    <div class="wrap">
+      <div class="contact-block reveal">
+        <p class="section-label">Book a Call</p>
+        <h2>Ready to talk? Book a discovery call.</h2>
+        <p class="body-text">
+          30 minutes, no pitch, just a conversation about your business and
+          where your books stand today. If Solvyx is a fit, we'll talk about
+          what working together looks like.
+        </p>
+        <div class="cta-row">
+          <a class="btn" href="https://cal.com/solvyx/discovery">
+            Book a discovery call
+            <span class="arrow" aria-hidden="true">&rarr;</span>
+          </a>
+          <span class="btn-meta">cal.com/solvyx/discovery</span>
+        </div>
       </div>
     </div>
   </section>
@@ -492,9 +618,10 @@
 
   <!-- ===== CTA 2: Send a message (the form) ===== -->
   <section>
-    <div class="wrap contact-block">
+    <div class="wrap">
+      <div class="contact-block reveal">
       <p class="section-label">Send a Message</p>
-      <h2>Have a question first? <em class="gold">Send a message.</em></h2>
+      <h2>Have a question first? Send a message.</h2>
       <p class="body-text">
         Tell me a bit about your business and what you're after. I usually reply
         within one business day.
@@ -560,18 +687,56 @@
 
         <div id="form-result" class="form-result" role="status" aria-live="polite"></div>
       </form>
+      </div>
     </div>
   </section>
 
   <!-- ===== Footer ===== -->
   <footer>
     <div class="wrap">
-      <span>&copy; 2026 Solvyx Financial LLC</span>
-      <a href="mailto:aaron@solvyxfinancial.com">aaron@solvyxfinancial.com</a>
+      <div class="footer-grid">
+        <div>
+          <p class="footer-name">
+            <span class="footer-word">
+              <svg class="footer-x" viewBox="0 0 58 66" aria-hidden="true">
+                <line x1="22" y1="11" x2="50" y2="55" stroke="#94AFC8" stroke-width="4.8" stroke-linecap="round" opacity="0.40"/>
+                <line x1="50" y1="11" x2="22" y2="55" stroke="#94AFC8" stroke-width="4.8" stroke-linecap="round" opacity="0.40"/>
+              </svg>
+              <span class="footer-text"><span class="fn-s">S</span>olvyx Financial</span>
+            </span>
+          </p>
+          <p class="footer-tag">Bookkeeping, built for the trades.</p>
+        </div>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="/">Home</a>
+          <a href="https://cal.com/solvyx/discovery">Book a call</a>
+          <a href="mailto:aaron@solvyxfinancial.com">aaron@solvyxfinancial.com</a>
+        </nav>
+      </div>
+      <p class="footer-legal">&copy; 2026 Solvyx Financial LLC</p>
     </div>
   </footer>
 
   <script>
+    // Scroll reveals — add .is-in once, then stop observing. Reduced-motion
+    // users get everything shown immediately (CSS also guarantees this).
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('is-in'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-in');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.1 });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+
     (function () {
       var form = document.getElementById('contact-form');
       var result = document.getElementById('form-result');

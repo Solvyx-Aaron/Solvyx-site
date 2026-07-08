@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- favicon.svg
+     Solvyx Financial — Favicon / Small Icon
+     Optimized for 16×16, 32×32, 48×48 display
+     Use: Browser tab, bookmarks, PWA manifest icon (pair with PNG fallback for legacy)
+     Note: At 16px the X lines disappear — only the S glyph and bg read. That's intentional. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"
+     width="32" height="32" role="img" aria-label="Solvyx Financial">
+  <title>Solvyx Financial</title>
+
+  <defs>
+    <style><![CDATA[
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600&display=swap');
+    ]]></style>
+  </defs>
+
+  <!-- Background: slate-900, rounded to match modern favicon convention -->
+  <rect width="32" height="32" rx="6" fill="#141C25"/>
+
+  <!-- X mark: simplified — both lines slate-300 at 40% opacity, matches source exactly -->
+  <line x1="8"  y1="7" x2="24" y2="25"
+        stroke="#94AFC8" stroke-width="2.5" stroke-linecap="round" opacity="0.40"/>
+  <line x1="24" y1="7" x2="8"  y2="25"
+        stroke="#94AFC8" stroke-width="2.5" stroke-linecap="round" opacity="0.40"/>
+
+  <!-- S glyph: gold, Outfit 600 — the primary readable element at small sizes -->
+  <text x="16" y="22" text-anchor="middle"
+        font-family="Outfit, 'DM Sans', system-ui, sans-serif"
+        font-weight="600" font-size="18" fill="#C9A96E">S</text>
+</svg>

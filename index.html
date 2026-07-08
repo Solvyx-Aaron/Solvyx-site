@@ -5,11 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Solvyx Financial — Bookkeeping for trades businesses</title>
   <meta name="description" content="Bookkeeping for trades businesses run by the owner, not by a finance team. Built by someone who actually knows the trades." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
   <!-- Outfit, the brand font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Gate scroll-reveal hiding on JS being available, so content is never
+       invisible for no-JS visitors or crawlers. -->
+  <script>document.documentElement.className += ' js';</script>
 
   <style>
     /* ---------- Brand tokens (from the brand brief) ---------- */
@@ -70,6 +75,20 @@
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='51.96'><path fill='none' stroke='%2394AFC8' stroke-width='0.6' d='M 30,0 L 15,25.98 L -15,25.98 L -30,0 L -15,-25.98 L 15,-25.98 Z M 75,25.98 L 60,51.96 L 30,51.96 L 15,25.98 L 30,0 L 60,0 Z'/></svg>");
     }
 
+    /* Film grain — feTurbulence noise blended over everything at low opacity.
+       Kills the dead-flat digital slab look without changing the palette. */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.05;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>");
+    }
+
+    ::selection { background: rgba(201, 169, 110, 0.35); color: var(--white); }
+
     a { color: inherit; text-decoration: none; }
 
     /* ---------- Layout primitives ---------- */
@@ -96,6 +115,7 @@
       font-size: 0.875rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      white-space: nowrap;
       color: var(--slate-300);
       padding: 0.65rem 1.25rem;
       border: 1px solid rgba(148, 175, 200, 0.25);
@@ -119,6 +139,26 @@
       transition: color 0.25s ease;
     }
     .nav-link:hover { color: var(--gold); }
+
+    /* Keyboard focus — gold ring, matches hover language */
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* Narrow screens: the full lockup + both nav actions don't fit on one line
+       at 390px. Shrink the lockup, tighten the actions, and let the actions row
+       wrap below the lockup instead of colliding with it. */
+    @media (max-width: 600px) {
+      nav .wrap { flex-wrap: wrap; row-gap: 1.25rem; }
+      .wordmark-text { font-size: 30px; }
+      .x-behind { left: -6px; width: 46px; height: 52px; }
+      .nav-actions { gap: 1rem; }
+      .nav-link { font-size: 0.8rem; }
+      .nav-cta { font-size: 0.8rem; padding: 0.55rem 1rem; }
+    }
 
     /* SX lockup — built to match v11 prototype EXACTLY.
        Prototype values (dark lockup): 38px font, 54px X, left:4px.
@@ -177,7 +217,9 @@
 
     /* ---------- Hero ---------- */
     .hero {
-      padding: clamp(4rem, 12vh, 9rem) 0 var(--pad-section);
+      /* Bottom padding is deliberately lighter than a full section pad — the
+         following section brings its own; stacking both left a dead zone. */
+      padding: clamp(4rem, 12vh, 8rem) 0 clamp(3.5rem, 7vw, 6rem);
       position: relative;
     }
     /* ---------- Hero reveal choreography ----------
@@ -193,6 +235,11 @@
       margin: 0 0 1.5rem;
       opacity: 0;
       animation: fade-in 0.6s 0.4s ease-out forwards;
+    }
+    /* At phone widths the 0.32em tracking pushes the eyebrow onto an awkward
+       second line — tighten it so it stays on one. */
+    @media (max-width: 480px) {
+      .eyebrow { font-size: 0.7rem; letter-spacing: 0.22em; }
     }
 
     /* Headline reveals as a clipped wipe — feels deliberate, not generic. */
@@ -259,12 +306,24 @@
     /* ---------- Section structure ---------- */
     section { padding: var(--pad-section) 0; position: relative; }
     .section-label {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
       font-size: 0.75rem;
       font-weight: 500;
       color: var(--gold);
       letter-spacing: 0.4em;
       text-transform: uppercase;
       margin: 0 0 1.5rem;
+    }
+    /* Short gold hairline anchors the label to the grid edge */
+    .section-label::before {
+      content: '';
+      width: 1.75rem;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.6;
+      flex: none;
     }
     h2 {
       font-family: var(--font-display);
@@ -295,40 +354,47 @@
     }
 
     /* ---------- 'What you'll get' — editorial asymmetric layout ----------
-       Breaks the standard 3-equal-column SaaS feature grid. First promise is
-       larger and oversized (it's the most important — responsiveness — and the
-       one that distinguishes you most from absentee bookkeepers). The other
-       two are smaller and offset, framing it. */
+       Breaks the standard 3-equal-column SaaS feature grid. First promise
+       (responsiveness — the one that most distinguishes you from absentee
+       bookkeepers) runs full-width as a horizontal feature row; the other two
+       sit side-by-side beneath it. The row/columns contrast reads deliberate
+       without leaving empty card area. */
     .promises {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 1rem;
+      gap: 1.25rem;
       margin-top: 3rem;
     }
     @media (min-width: 860px) {
       .promises {
-        grid-template-columns: 1.4fr 1fr;
-        grid-template-rows: auto auto;
-        gap: 1.25rem 1.5rem;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
       }
       .promise:nth-child(1) {
-        grid-row: span 2;
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+        grid-template-rows: auto auto;
+        column-gap: 3.5rem;
+        align-items: start;
         padding: 3rem 2.5rem;
       }
       .promise:nth-child(1) .promise-num {
+        grid-column: 1;
         font-size: 4rem;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
       }
       .promise:nth-child(1) h3 {
+        grid-column: 1;
         font-size: 1.875rem;
-        margin-bottom: 1.25rem;
+        margin-bottom: 0;
       }
       .promise:nth-child(1) p {
+        grid-column: 2;
+        grid-row: 1 / 3;
+        align-self: center;
         font-size: 1.075rem;
-        max-width: 36ch;
-      }
-      .promise:nth-child(3) {
-        margin-top: 1.5rem;       /* offset the third card downward */
+        max-width: 44ch;
       }
     }
     .promise {
@@ -367,6 +433,142 @@
       margin: 0;
     }
 
+    /* ---------- Report mock — code-crafted SVG, slate/gold only ----------
+       A sample month-end summary. The figures are illustrative (it's badged
+       SAMPLE in the artwork) — they are NOT client data and must never be
+       presented as such. Income minus the three expense lines equals the net
+       line; keep that true if the numbers ever change. */
+    .report-mock { margin: 2.75rem 0 0; max-width: 22rem; }
+    .report-mock svg { display: block; width: 100%; height: auto; }
+    .report-mock text { font-family: var(--font); font-variant-numeric: tabular-nums; }
+    /* The report draws itself when scrolled into view: bars grow from the
+       left (staggered), dollar figures count up via JS. Markup always holds
+       the finished values, so no-JS and reduced-motion users see the final
+       report with zero motion. */
+    .js .report-mock .rm-bar {
+      transform: scaleX(0);
+      transform-box: fill-box;
+      transform-origin: left center;
+      transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition-delay: var(--bar-delay, 0s);
+    }
+    .js .report-mock.is-live .rm-bar { transform: scaleX(1); }
+    @media (prefers-reduced-motion: reduce) {
+      .js .report-mock .rm-bar { transform: none; transition: none; }
+    }
+    .rm-kicker { fill: var(--gold); font-size: 10px; font-weight: 500; letter-spacing: 0.18em; }
+    .rm-sample { fill: var(--slate-300); font-size: 9px; letter-spacing: 0.14em; }
+    .rm-label  { fill: var(--slate-300); font-size: 12px; }
+    .rm-value  { fill: var(--white); font-size: 12.5px; font-weight: 600; }
+    .rm-net-label { fill: var(--white); font-size: 13px; font-weight: 600; }
+    .rm-net-value { fill: var(--gold); font-size: 15px; font-weight: 700; }
+    .rm-caption {
+      margin-top: 1rem;
+      color: var(--slate-300);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      max-width: 34ch;
+    }
+
+    /* ---------- Pricing — ledger rows, not SaaS cards ----------
+       Tiers read top-to-bottom like a rate sheet: name + who it's for,
+       what's included, price on the right. Quieter and more owner-to-owner
+       than three boxed columns with a "most popular" badge. */
+    .tiers {
+      margin-top: 3.5rem;
+      border-top: 1px solid rgba(148, 175, 200, 0.14);
+    }
+    .tier {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem 2.5rem;
+      padding: 2.25rem 0;
+      border-bottom: 1px solid rgba(148, 175, 200, 0.14);
+      transition: background 0.4s ease;
+    }
+    .tier:hover {
+      background: linear-gradient(90deg, rgba(201, 169, 110, 0.05), transparent 70%);
+    }
+    .tier-name { transition: color 0.3s ease; }
+    .tier:hover .tier-name { color: var(--gold); }
+    @media (min-width: 860px) {
+      .tier {
+        grid-template-columns: 4fr 5fr 3fr;
+        align-items: start;
+      }
+    }
+    .tier-name {
+      font-family: var(--font-display);
+      font-size: 1.375rem;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: var(--white);
+      margin: 0 0 0.4rem;
+    }
+    .tier-for {
+      color: var(--slate-300);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      margin: 0;
+      max-width: 28ch;
+    }
+    .tier-includes {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      color: var(--slate-300);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    .tier-includes li {
+      position: relative;
+      padding-left: 1.4rem;
+    }
+    .tier-includes li + li { margin-top: 0.45rem; }
+    .tier-includes li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.75em;
+      width: 0.75rem;
+      height: 1px;
+      background: var(--gold);
+    }
+    .tier-price {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--gold);
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+    @media (min-width: 860px) {
+      .tier-price { text-align: right; }
+    }
+    .tier-price .from {
+      display: block;
+      font-family: var(--font);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--slate-300);
+      margin-bottom: 0.45rem;
+    }
+    .tier-price .per {
+      font-family: var(--font);
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: var(--slate-300);
+    }
+    .pricing-note {
+      margin-top: 2rem;
+      color: var(--slate-300);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      max-width: 62ch;
+    }
+
     /* ---------- Divider ---------- */
     .divider {
       height: 1px;
@@ -401,18 +603,74 @@
     /* ---------- Footer ---------- */
     footer {
       border-top: 1px solid rgba(148, 175, 200, 0.08);
-      padding: 2.5rem 0;
+      padding: 3.5rem 0 2.5rem;
       color: var(--slate-300);
       font-size: 0.875rem;
     }
-    footer .wrap {
+    .footer-grid {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 2rem;
     }
-    footer a:hover { color: var(--gold); }
+    .footer-name {
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin: 0 0 0.45rem;
+    }
+    /* Footer wordmark carries the same X-behind mark as the nav lockup,
+       scaled to this font size (nav ratios: X is ~1.53em wide, ~1.74em tall,
+       offset ~-0.21em at the S/O junction). */
+    .footer-word { position: relative; display: inline-block; line-height: 1; }
+    .footer-x {
+      position: absolute;
+      top: 50%;
+      left: -3px;
+      width: 24px;
+      height: 28px;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+    .footer-text { position: relative; z-index: 2; }
+    .fn-s { color: var(--gold); }
+    .footer-tag { margin: 0; font-size: 0.875rem; }
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.75rem;
+    }
+    .footer-links a { transition: color 0.25s ease; }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-legal {
+      margin: 2.5rem 0 0;
+      font-size: 0.8rem;
+      color: rgba(148, 175, 200, 0.55);
+    }
+
+    /* ---------- Scroll reveals ----------
+       Same motion personality as the hero: one easing curve, small rise,
+       short stagger within a group via --reveal-delay. Hidden state only
+       applies when JS is present (html.js), and reduced-motion users see
+       everything immediately. */
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition:
+        opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
+        transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition-delay: var(--reveal-delay, 0s);
+    }
+    .js .reveal.is-in {
+      opacity: 1;
+      transform: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .js .reveal { opacity: 1; transform: none; }
+    }
 
     /* ---------- Animation ---------- */
     @keyframes fade-up {
@@ -441,7 +699,7 @@
 </head>
 <body>
 
-
+  <div class="grain" aria-hidden="true"></div>
 
   <!-- ===== Nav ===== -->
   <nav>
@@ -470,19 +728,22 @@
   <header class="hero">
     <div class="wrap">
       <p class="eyebrow">Bookkeeping &nbsp;·&nbsp; Built for the Trades</p>
+      <!-- The h1 keeps its gold phrase deliberately — one of only two on the
+           site (the other is the contact h1). Don't add gold spans to h2s;
+           the every-heading-has-a-gold-phrase pattern was removed on purpose. -->
       <h1>Books that <em class="gold">work the way</em> your business does.</h1>
       <p class="lede">
-        Bookkeeping for trades businesses &mdash; the kind run by the owner, not by
-        a finance team. Built by someone who actually understands the work: the
-        cash jobs, the messy receipts, the in-between weeks &mdash; and turns it
-        into clean numbers you can act on.
+        Bookkeeping for trades businesses, the kind run by the owner, not by
+        a finance team. Built by someone who understands the work: the cash
+        jobs, the messy receipts, the in-between weeks. All of it turned into
+        clean numbers you can act on.
       </p>
       <div class="cta-row">
         <a class="btn" href="https://cal.com/solvyx/discovery">
           Book a discovery call
           <span class="arrow" aria-hidden="true">&rarr;</span>
         </a>
-        <span class="btn-meta">30 minutes &nbsp;·&nbsp; No pitch, just a conversation</span>
+        <span class="btn-meta">30 minutes &nbsp;·&nbsp; Just a conversation</span>
       </div>
     </div>
   </header>
@@ -492,11 +753,46 @@
   <!-- ===== Why trades ===== -->
   <section>
     <div class="wrap split">
-      <div>
+      <div class="reveal">
         <p class="section-label">The Gap</p>
-        <h2>Most bookkeepers find your work <em class="gold">messy.</em> I don't.</h2>
+        <h2>Most bookkeepers find your work messy. I don't.</h2>
+
+        <figure class="report-mock" role="img"
+                aria-label="Sample month-end summary showing income, materials, payroll, and overhead lines with a net profit total">
+          <svg viewBox="0 0 340 232" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="0.5" y="0.5" width="339" height="231" rx="6" fill="#141C25" stroke="rgba(148,175,200,0.14)"/>
+            <text x="20" y="31" class="rm-kicker">MONTH-END SUMMARY</text>
+            <rect x="262.5" y="16.5" width="57" height="20" rx="10" fill="none" stroke="rgba(148,175,200,0.3)"/>
+            <text x="291" y="29.5" text-anchor="middle" class="rm-sample">SAMPLE</text>
+            <line x1="20" y1="46" x2="320" y2="46" stroke="rgba(201,169,110,0.25)"/>
+
+            <text x="20" y="72" class="rm-label">Income</text>
+            <text x="320" y="72" text-anchor="end" class="rm-value rm-count" data-count="48250">$48,250</text>
+            <rect class="rm-bar" x="20" y="80" width="300" height="3" rx="1.5" fill="rgba(201,169,110,0.75)"/>
+
+            <text x="20" y="104" class="rm-label">Materials &amp; subs</text>
+            <text x="320" y="104" text-anchor="end" class="rm-value rm-count" data-count="21380">$21,380</text>
+            <rect class="rm-bar" style="--bar-delay: 0.15s" x="20" y="112" width="133" height="3" rx="1.5" fill="#2D3D52"/>
+
+            <text x="20" y="136" class="rm-label">Payroll &amp; labor</text>
+            <text x="320" y="136" text-anchor="end" class="rm-value rm-count" data-count="13900">$13,900</text>
+            <rect class="rm-bar" style="--bar-delay: 0.3s" x="20" y="144" width="86" height="3" rx="1.5" fill="#2D3D52"/>
+
+            <text x="20" y="168" class="rm-label">Overhead</text>
+            <text x="320" y="168" text-anchor="end" class="rm-value rm-count" data-count="3650">$3,650</text>
+            <rect class="rm-bar" style="--bar-delay: 0.45s" x="20" y="176" width="23" height="3" rx="1.5" fill="#2D3D52"/>
+
+            <line x1="20" y1="194" x2="320" y2="194" stroke="rgba(201,169,110,0.35)"/>
+            <text x="20" y="218" class="rm-net-label">Net profit</text>
+            <text x="320" y="218" text-anchor="end" class="rm-net-value rm-count" data-count="9320">$9,320</text>
+          </svg>
+          <figcaption class="rm-caption">
+            The kind of month-end summary you'll actually read: every dollar
+            accounted for, one number that matters at the bottom.
+          </figcaption>
+        </figure>
       </div>
-      <div>
+      <div class="reveal" style="--reveal-delay: 0.12s">
         <p class="body-text">
           Trades businesses don't run on spreadsheets and tidy invoice cycles.
           They run on jobs that change scope mid-week, materials reimbursed three
@@ -511,7 +807,7 @@
         <p class="body-text">
           I come from the trades side. I know what a real job looks like, what
           the numbers ought to mean, and how to set up books that reflect the
-          way you actually work &mdash; not the way an accountant wishes you worked.
+          way you actually work, not the way an accountant wishes you worked.
         </p>
       </div>
     </div>
@@ -523,22 +819,22 @@
   <section>
     <div class="wrap">
       <p class="section-label">What You Get</p>
-      <h2>Three things every trades business owner deserves <em class="gold">from their bookkeeper.</em></h2>
+      <h2>Three things every trades business owner deserves from their bookkeeper.</h2>
 
       <div class="promises">
-        <div class="promise">
+        <div class="promise reveal">
           <div class="promise-num">01</div>
           <h3>Responsiveness</h3>
-          <p>You won't wait two weeks for a reply. When something needs answering, it gets answered &mdash; in plain English, not accountant-speak.</p>
+          <p>You won't wait two weeks for a reply. When something needs answering, it gets answered in plain English, not accountant-speak.</p>
         </div>
 
-        <div class="promise">
+        <div class="promise reveal" style="--reveal-delay: 0.12s">
           <div class="promise-num">02</div>
           <h3>Clarity</h3>
-          <p>You'll always know where you stand financially. Clean books, on time, every month &mdash; so you can make decisions on facts instead of gut feel.</p>
+          <p>You'll always know where you stand financially. Clean books, on time, every month, so you can make decisions on facts instead of gut feel.</p>
         </div>
 
-        <div class="promise">
+        <div class="promise reveal" style="--reveal-delay: 0.2s">
           <div class="promise-num">03</div>
           <h3>Room to grow</h3>
           <p>Solvyx scales with your business. Start with monthly bookkeeping; layer on payroll, AR cleanup, or job costing as the business grows.</p>
@@ -547,30 +843,95 @@
     </div>
   </section>
 
+  <div class="divider"></div>
+
+  <!-- ===== Pricing ===== -->
+  <section>
+    <div class="wrap">
+      <p class="section-label">Pricing</p>
+      <h2>One flat monthly number, agreed before the work starts.</h2>
+      <p class="body-text">
+        Every package is month-to-month and priced for up to 150 transactions
+        a month. You'll know the number before the work begins, and it doesn't
+        change without a conversation first.
+      </p>
+
+      <!-- Pricing matches the internal rate sheet (Tier 1/2/3 = $300/$450/$650),
+           confirmed for publication 2026-07-07. -->
+      <div class="tiers">
+        <div class="tier reveal">
+          <div>
+            <h3 class="tier-name">Essentials</h3>
+            <p class="tier-for">Clean, current books and the two reports every owner should be reading.</p>
+          </div>
+          <ul class="tier-includes">
+            <li>Monthly bank &amp; credit card reconciliation</li>
+            <li>Profit &amp; loss and balance sheet, every month</li>
+            <li>QuickBooks Online maintenance</li>
+          </ul>
+          <div class="tier-price"><span class="from">Starting at</span>$300 <span class="per">/ month</span></div>
+        </div>
+
+        <div class="tier reveal" style="--reveal-delay: 0.12s">
+          <div>
+            <h3 class="tier-name">Operations</h3>
+            <p class="tier-for">Know who owes you, and what you owe, before it becomes a problem.</p>
+          </div>
+          <ul class="tier-includes">
+            <li>Everything in Essentials</li>
+            <li>Accounts receivable tracking</li>
+            <li>Accounts payable tracking</li>
+          </ul>
+          <div class="tier-price"><span class="from">Starting at</span>$450 <span class="per">/ month</span></div>
+        </div>
+
+        <div class="tier reveal" style="--reveal-delay: 0.2s">
+          <div>
+            <h3 class="tier-name">Command</h3>
+            <p class="tier-for">For owners weighing hires, equipment, and growth against the cash on hand.</p>
+          </div>
+          <ul class="tier-includes">
+            <li>Everything in Operations</li>
+            <li>Monthly cash-flow report</li>
+            <li>Quarterly review call</li>
+          </ul>
+          <div class="tier-price"><span class="from">Starting at</span>$650 <span class="per">/ month</span></div>
+        </div>
+      </div>
+
+      <p class="pricing-note reveal">
+        Payroll, 1099 prep, catch-up work, and new-business setup are add-ons,
+        scoped on the discovery call. Higher transaction volume is quoted
+        up front, never billed as a surprise.
+      </p>
+    </div>
+  </section>
+
   <!-- ===== About ===== -->
   <section class="about">
     <div class="wrap split">
-      <div>
+      <div class="reveal">
         <p class="section-label">About</p>
-        <h2>Numbers and trades, <em class="gold">in the same person.</em></h2>
+        <h2>Full attention. Fixed rhythm. One name on the&nbsp;work.</h2>
       </div>
-      <div>
+      <div class="reveal" style="--reveal-delay: 0.12s">
         <p class="body-text">
-          I'm Aaron Olinger, the person behind Solvyx Financial. I built Solvyx
-          because trades businesses deserve a bookkeeper who actually knows what
-          the work looks like &mdash; and most of them don't have one.
+          Solvyx Financial does one thing: monthly bookkeeping for trades
+          contractors. No tax-season crush, no audit work, no forty other
+          industries competing for attention. Your books get worked every
+          month, on a schedule, not batched in a panic each quarter.
         </p>
         <p class="body-text">
-          I come to bookkeeping with a foot in both worlds. I spend my time
-          turning real-world operations into structured numbers, and I've seen
-          firsthand how often the trades get fit into accounting frameworks
-          that weren't built for them. The work isn't always clean and it's
-          rarely black-and-white &mdash; that's normal to me, not an obstacle.
+          That focus shows up in the details. A chart of accounts built around
+          jobs and materials instead of a generic template. Reconciliations
+          that actually get finished. Questions answered in plain English by
+          someone who already knows your business, so you're never
+          re-explaining yourself to a rotating cast.
         </p>
         <p class="body-text">
-          Solvyx Financial is built on stability, precision, and the belief
-          that small businesses are worth doing well by. If that sounds like
-          the kind of bookkeeper you've been looking for, let's talk.
+          Accountability stays simple: one point of contact who owns your
+          numbers, delivers on a fixed monthly rhythm, and answers for the
+          result. If that's the arrangement you've been looking for, let's talk.
         </p>
       </div>
     </div>
@@ -580,9 +941,9 @@
 
   <!-- ===== Final CTA ===== -->
   <section class="final-cta">
-    <div class="wrap">
+    <div class="wrap reveal">
       <p class="section-label">Next Step</p>
-      <h2>A 30-minute call. <em class="gold">No pitch.</em></h2>
+      <h2>A 30-minute call. No pitch.</h2>
       <p class="body-text" style="margin-bottom: 2.5rem;">
         Tell me about your business and where the books stand today. If Solvyx is
         a fit, we'll talk about what working together looks like. If not, you'll
@@ -601,10 +962,87 @@
   <!-- ===== Footer ===== -->
   <footer>
     <div class="wrap">
-      <span>&copy; 2026 Solvyx Financial LLC</span>
-      <a href="mailto:aaron@solvyxfinancial.com">aaron@solvyxfinancial.com</a>
+      <div class="footer-grid">
+        <div>
+          <p class="footer-name">
+            <span class="footer-word">
+              <svg class="footer-x" viewBox="0 0 58 66" aria-hidden="true">
+                <line x1="22" y1="11" x2="50" y2="55" stroke="#94AFC8" stroke-width="4.8" stroke-linecap="round" opacity="0.40"/>
+                <line x1="50" y1="11" x2="22" y2="55" stroke="#94AFC8" stroke-width="4.8" stroke-linecap="round" opacity="0.40"/>
+              </svg>
+              <span class="footer-text"><span class="fn-s">S</span>olvyx Financial</span>
+            </span>
+          </p>
+          <p class="footer-tag">Bookkeeping, built for the trades.</p>
+        </div>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="/contact">Contact</a>
+          <a href="https://cal.com/solvyx/discovery">Book a call</a>
+          <a href="mailto:aaron@solvyxfinancial.com">aaron@solvyxfinancial.com</a>
+        </nav>
+      </div>
+      <p class="footer-legal">&copy; 2026 Solvyx Financial LLC</p>
     </div>
   </footer>
+
+  <script>
+    // Scroll reveals — add .is-in once, then stop observing. Reduced-motion
+    // users get everything shown immediately (CSS also guarantees this).
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('is-in'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-in');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.1 });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+
+    // Report mock draws itself on first view: bars grow (CSS, via .is-live),
+    // dollar figures count up. Markup ships final values, so anything that
+    // skips this path still shows the finished report.
+    (function () {
+      var mock = document.querySelector('.report-mock');
+      if (!mock) return;
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function fmt(n) { return '$' + n.toLocaleString('en-US'); }
+      function run() {
+        mock.classList.add('is-live');
+        mock.querySelectorAll('.rm-count').forEach(function (t, i) {
+          var target = parseInt(t.getAttribute('data-count'), 10);
+          var start = null, dur = 900;
+          t.textContent = fmt(0);
+          function step(ts) {
+            if (start === null) start = ts;
+            var p = Math.min(1, (ts - start) / dur);
+            var eased = 1 - Math.pow(1 - p, 3);
+            t.textContent = fmt(Math.round(target * eased));
+            if (p < 1) requestAnimationFrame(step);
+          }
+          setTimeout(function () { requestAnimationFrame(step); }, i * 120);
+        });
+      }
+
+      if (reduce || !('IntersectionObserver' in window)) {
+        mock.classList.add('is-live'); // final values already in markup
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) { io.unobserve(entry.target); run(); }
+        });
+      }, { threshold: 0.4 });
+      io.observe(mock);
+    })();
+  </script>
 
 </body>
 </html>
