@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Withings authorization</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <style>
+    :root {
+      --gold: #C9A96E;
+      --slate-950: #0D1117;
+      --slate-300: #94AFC8;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--slate-950);
+      color: var(--white);
+      font-family: system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+    .card {
+      max-width: 34rem;
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.4rem;
+      margin: 0 0 1rem;
+    }
+    p { color: var(--slate-300); line-height: 1.5; }
+    .code-box {
+      margin: 1.5rem 0;
+      padding: 1.25rem;
+      background: #141C25;
+      border: 1px solid rgba(201, 169, 110, 0.35);
+      border-radius: 8px;
+      font-family: ui-monospace, monospace;
+      font-size: 1.1rem;
+      word-break: break-all;
+      color: var(--gold);
+      cursor: pointer;
+    }
+    .hint { font-size: 0.85rem; }
+    button {
+      background: var(--gold);
+      color: var(--slate-950);
+      border: none;
+      border-radius: 4px;
+      padding: 0.6rem 1.25rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 id="heading">Withings authorization</h1>
+    <p id="message">Waiting for a code&hellip;</p>
+    <div id="code-box" class="code-box" style="display:none;" title="Click to copy"></div>
+    <button id="copy-btn" style="display:none;">Copy code</button>
+    <p class="hint" id="hint" style="display:none;">
+      Paste this into the terminal running withings_authorize.py now &mdash;
+      the code expires 30 seconds after this page loaded.
+    </p>
+  </div>
+  <script>
+    var params = new URLSearchParams(window.location.search);
+    var code = params.get('code');
+    var error = params.get('error');
+    var heading = document.getElementById('heading');
+    var message = document.getElementById('message');
+    var codeBox = document.getElementById('code-box');
+    var copyBtn = document.getElementById('copy-btn');
+    var hint = document.getElementById('hint');
+
+    if (code) {
+      message.textContent = 'Copy this code now:';
+      codeBox.textContent = code;
+      codeBox.style.display = 'block';
+      copyBtn.style.display = 'inline-block';
+      hint.style.display = 'block';
+      function copyCode() {
+        navigator.clipboard.writeText(code).then(function () {
+          copyBtn.textContent = 'Copied';
+        });
+      }
+      codeBox.addEventListener('click', copyCode);
+      copyBtn.addEventListener('click', copyCode);
+    } else if (error) {
+      heading.textContent = 'Authorization failed';
+      message.textContent = 'Withings returned an error: ' + error;
+    } else {
+      heading.textContent = 'Withings callback';
+      message.textContent = 'This page is a callback target for personal API authorization. No code was present in the URL.';
+    }
+  </script>
+</body>
+</html>
